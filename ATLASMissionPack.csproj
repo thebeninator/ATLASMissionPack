@@ -36,11 +36,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Desktop\GHPC MODDED\MelonLoader\net6\0Harmony.dll</HintPath>
     </Reference>
-    <Reference Include="Assembly-CSharp-Publicized">
-      <HintPath>..\..\..\Desktop\GHPC MODDED\GHPC_Data\Managed\publicized_assemblies\Assembly-CSharp-Publicized.dll</HintPath>
+    <Reference Include="Assembly-CSharp-Publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\GHPC MODDED\GHPC_Data\Managed\publicized_assemblies\Assembly-CSharp-Publicized.dll</HintPath>
     </Reference>
-    <Reference Include="CustomMissionUtility">
-      <HintPath>..\..\..\Desktop\GHPC MODDED\Mods\CustomMissionUtility.dll</HintPath>
+    <Reference Include="CustomMissionUtility, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\GHPC MODDED\Mods\CustomMissionUtility.dll</HintPath>
     </Reference>
     <Reference Include="Eflatun.SceneReference_publicized">
       <HintPath>..\..\..\Desktop\GHPC MODDED\GHPC_Data\Managed\publicized_assemblies\Eflatun.SceneReference_publicized.dll</HintPath>
@@ -87,6 +89,9 @@
     <Compile Include="AC130\AC130.cs" />
     <Compile Include="AC130\M61SoundManager.cs" />
     <Compile Include="CameraShake.cs" />
+    <Compile Include="Missions\SupplyRun.cs" />
+    <Compile Include="Missions\CounterSniper.cs" />
+    <Compile Include="Missions\TheReservistsPt1.cs" />
     <Compile Include="Missions\WingedReaper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util.cs" />

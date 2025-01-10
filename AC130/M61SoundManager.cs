@@ -4,6 +4,8 @@ using GHPC.Camera;
 using GHPC.Weapons;
 using UnityEngine;
 using HarmonyLib;
+using GHPC;
+using GHPC.Audio;
 
 namespace ATLASMissionPack
 {
@@ -18,6 +20,8 @@ namespace ATLASMissionPack
         public FMOD.Channel channel = new FMOD.Channel();
         public FMOD.Channel channel_closing = new FMOD.Channel();
 
+        public static AudioSettingsManager audio_manager;
+
         public Transform audio_origin;
 
         [HarmonyPatch(typeof(GHPC.Weapons.WeaponSystem), "Fire")]
@@ -27,7 +31,7 @@ namespace ATLASMissionPack
             {
                 if (!__instance.AbleToFire) return true;
 
-                if (__instance.Feed.AmmoTypeInBreech.Caliber == 105)
+                if (__instance.Feed.AmmoTypeInBreech.Caliber == 105 && __instance.CurrentAmmoType.Name == "M1/M557 HE-PD")
                 {
                     CameraManager._mainCamera.GetComponent<CameraShake>().shakeAmount = 3.2f;
                     CameraManager._mainCamera.GetComponent<CameraShake>().shakeDuration = 0.25f;
@@ -133,26 +137,16 @@ namespace ATLASMissionPack
             channel_group.setVolumeRamp(true);
             channel_group.setMode(MODE._3D_WORLDRELATIVE);
 
-            //FMOD.Channel channel;
             //FMOD.Sound sound_interior = __instance.SingleShotEventPaths[0].Contains("actually_2a72") ? sound_alt : sound;
             FMOD.Sound s = sound_closing; //? sound_interior : sound_exterior;
             channel_closing.setFrequency(48000f);
             channel_closing.setVolumeRamp(true);
             corSystem.playSound(s, channel_group, true, out channel_closing);
-            /*
-            channels.Add(channel);
 
-            if (channels.Count > 1)
-            {
-                channels[1].stop();
-                channels.RemoveAt(1);
-            }
-            */
+            float game_vol = audio_manager._previousVolume;
+            float gun_vol = game_vol + 0.2f * game_vol;
 
-            //float game_vol = PactIncreasedLethalityMod.audio_settings_manager._previousVolume;
-            //float gun_vol = interior ? game_vol + 0.0185f * (game_vol * 10f) : game_vol;
-
-            //channel.setVolume(gun_vol);
+            channel_closing.setVolume(gun_vol);
             channel_closing.set3DAttributes(ref pos, ref vel);
             channel_group.set3DAttributes(ref pos, ref vel);
             channel_closing.setPaused(false);
@@ -182,7 +176,6 @@ namespace ATLASMissionPack
                 channel_group.setVolumeRamp(true);
                 channel_group.setMode(MODE._3D_WORLDRELATIVE);
 
-                //FMOD.Channel channel;
                 //FMOD.Sound sound_interior = __instance.SingleShotEventPaths[0].Contains("actually_2a72") ? sound_alt : sound;
                 FMOD.Sound s = sound; //? sound_interior : sound_exterior;
 
@@ -190,20 +183,10 @@ namespace ATLASMissionPack
                 channel.setVolumeRamp(true);
                 corSystem.playSound(s, channel_group, true, out channel);
 
-                /*
-                channels.Add(channel);
+                float game_vol = audio_manager._previousVolume;
+                float gun_vol = game_vol + 0.2f * game_vol;
 
-                if (channels.Count > 1)
-                {
-                    channels[1].stop();
-                    channels.RemoveAt(1);
-                }
-                */
-
-                //float game_vol = PactIncreasedLethalityMod.audio_settings_manager._previousVolume;
-                //float gun_vol = interior ? game_vol + 0.0185f * (game_vol * 10f) : game_vol;
-
-                //channel.setVolume(gun_vol);
+                channel.setVolume(gun_vol);
                 channel.set3DAttributes(ref pos, ref vel);
                 channel_group.set3DAttributes(ref pos, ref vel);
                 channel.setPaused(false);

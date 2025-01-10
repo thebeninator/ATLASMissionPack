@@ -9,8 +9,6 @@ using Reticle;
 using UnityEngine.UI;
 using UnityEngine;
 using HarmonyLib;
-using MelonLoader;
-using static ATLASMissionPack.AC130;
 
 namespace ATLASMissionPack
 {
@@ -83,108 +81,6 @@ namespace ATLASMissionPack
             {
                 if (__instance.GetComponent<AlwaysLase>() != null)
                     __instance.CurrentStabMode = StabilizationMode.WorldPoint;
-            }
-        }
-
-        public static void Init() {
-            foreach (Vehicle obj in Resources.FindObjectsOfTypeAll(typeof(Vehicle)))
-            {
-                if (obj.name == "M2 Bradley")
-                {
-                    box_canvas = GameObject.Instantiate(obj.transform.Find("FCS and sights/GPS Optic/M2 Bradley GPS canvas").gameObject);
-                    GameObject.Destroy(box_canvas.transform.GetChild(2).gameObject);
-                    box_canvas.SetActive(false);
-                    box_canvas.hideFlags = HideFlags.DontUnloadUnusedAsset;
-                    box_canvas.name = "boxy";
-                    break;
-                }
-            }
-
-            if (gun_m102 == null)
-            {
-                foreach (AmmoCodexScriptable s in Resources.FindObjectsOfTypeAll(typeof(AmmoCodexScriptable)))
-                {
-                    if (s.AmmoType.Name == "M456 HEAT-FS-T") ammo_m456 = s.AmmoType;
-                    if (s.AmmoType.Name == "25mm APDS-T M791") ammo_m791 = s.AmmoType;
-                    if (s.AmmoType.Name == "25mm HEI-T M792") ammo_m792 = s.AmmoType;
-
-                    if (ammo_m456 != null && ammo_m791 != null && ammo_m792 != null) break;
-                }
-
-                gun_m102 = ScriptableObject.CreateInstance<WeaponSystemCodexScriptable>();
-                gun_m102.name = "gun_m102";
-                gun_m102.CaliberMm = 105;
-                gun_m102.FriendlyName = "105mm howitzer M102";
-                gun_m102.Type = WeaponSystemCodexScriptable.WeaponType.LargeCannon;
-
-                ammo_m1 = new AmmoType();
-                Util.ShallowCopy(ammo_m1, ammo_m456);
-                ammo_m1.Name = "M1/M557 HE-PD";
-                ammo_m1.AlwaysProduceBlast = true;
-                ammo_m1.ShatterOnRicochet = false;
-                ammo_m1.Category = AmmoType.AmmoCategory.Explosive;
-                ammo_m1.Caliber = 105;
-                ammo_m1.RhaPenetration = 40f;
-                ammo_m1.MuzzleVelocity = 600f; // actual mv is ~500 m/s but makes the howitzer a lot more finicky to use 
-                ammo_m1.Mass = 0.855f;
-                ammo_m1.SpallMultiplier = 1.35f;
-                ammo_m1.TntEquivalentKg = 15.66f; // overkill b/c fun
-                ammo_m1.DetonateSpallCount = 120;
-                ammo_m1.MaxSpallRha = 55f;
-                ammo_m1.MinSpallRha = 20f;
-                ammo_m1.UseTracer = false;
-                ammo_m1.Coeff = 0.0f;
-                //ammo_m1.ImpactFuseTime = 0.05f;
-                ammo_m1.ImpactEffectDescriptor = new GHPC.Effects.ParticleEffectsManager.ImpactEffectDescriptor()
-                {
-                    HasImpactEffect = true,
-                    ImpactCategory = GHPC.Effects.ParticleEffectsManager.Category.HighExplosive,
-                    EffectSize = GHPC.Effects.ParticleEffectsManager.EffectSize.MainGun,
-                    Flags = GHPC.Effects.ParticleEffectsManager.ImpactModifierFlags.Large,
-                    RicochetType = GHPC.Effects.ParticleEffectsManager.RicochetType.None,
-                    MinFilterStrictness = GHPC.Effects.ParticleEffectsManager.FilterStrictness.Low
-                };
-
-                ammo_codex_m1 = ScriptableObject.CreateInstance<AmmoCodexScriptable>();
-                ammo_codex_m1.AmmoType = ammo_m1;
-                ammo_codex_m1.name = "ammo_m1";
-
-                clip_m1 = new AmmoType.AmmoClip();
-                clip_m1.Capacity = 1;
-                clip_m1.Name = "M1/M557 HE-PD";
-                clip_m1.MinimalPattern = new AmmoCodexScriptable[1];
-                clip_m1.MinimalPattern[0] = ammo_codex_m1;
-
-                clip_codex_m1 = ScriptableObject.CreateInstance<AmmoClipCodexScriptable>();
-                clip_codex_m1.name = "clip_m1";
-                clip_codex_m1.CompatibleWeaponSystems = new WeaponSystemCodexScriptable[1];
-                clip_codex_m1.CompatibleWeaponSystems[0] = gun_m102;
-                clip_codex_m1.ClipType = clip_m1;
-
-                ammo_m81a1 = new AmmoType();
-                Util.ShallowCopy(ammo_m81a1, ammo_m791);
-                ammo_m81a1.Name = "M81A1 AP-T";
-                ammo_m81a1.Caliber = 40;
-                ammo_m81a1.RhaPenetration = 55f;
-                ammo_m81a1.MuzzleVelocity = 850f;
-                ammo_m81a1.Mass = 0.850f;
-                ammo_m81a1.Coeff = 0.08f;
-                ammo_m81a1.SectionalArea *= 3.5f;
-                ammo_m81a1.UseTracer = true;
-
-                ammo_codex_m81a1 = ScriptableObject.CreateInstance<AmmoCodexScriptable>();
-                ammo_codex_m81a1.AmmoType = ammo_m81a1;
-                ammo_codex_m81a1.name = "ammo_m81a1";
-
-                clip_m81a1 = new AmmoType.AmmoClip();
-                clip_m81a1.Capacity = 2500;
-                clip_m81a1.Name = "M81A1 AP-T";
-                clip_m81a1.MinimalPattern = new AmmoCodexScriptable[1];
-                clip_m81a1.MinimalPattern[0] = ammo_codex_m81a1;
-
-                clip_codex_m81a1 = ScriptableObject.CreateInstance<AmmoClipCodexScriptable>();
-                clip_codex_m81a1.name = "clip_m81a1";
-                clip_codex_m81a1.ClipType = clip_m81a1;
             }
         }
 
@@ -433,6 +329,109 @@ namespace ATLASMissionPack
             }
 
             yield break;
+        }
+
+        public static void Init()
+        {
+            foreach (Vehicle obj in Resources.FindObjectsOfTypeAll(typeof(Vehicle)))
+            {
+                if (obj.name == "M2 Bradley")
+                {
+                    box_canvas = GameObject.Instantiate(obj.transform.Find("FCS and sights/GPS Optic/M2 Bradley GPS canvas").gameObject);
+                    GameObject.Destroy(box_canvas.transform.GetChild(2).gameObject);
+                    box_canvas.SetActive(false);
+                    box_canvas.hideFlags = HideFlags.DontUnloadUnusedAsset;
+                    box_canvas.name = "boxy";
+                    break;
+                }
+            }
+
+            if (gun_m102 == null)
+            {
+                foreach (AmmoCodexScriptable s in Resources.FindObjectsOfTypeAll(typeof(AmmoCodexScriptable)))
+                {
+                    if (s.AmmoType.Name == "M456 HEAT-FS-T") ammo_m456 = s.AmmoType;
+                    if (s.AmmoType.Name == "25mm APDS-T M791") ammo_m791 = s.AmmoType;
+                    if (s.AmmoType.Name == "25mm HEI-T M792") ammo_m792 = s.AmmoType;
+
+                    if (ammo_m456 != null && ammo_m791 != null && ammo_m792 != null) break;
+                }
+
+                gun_m102 = ScriptableObject.CreateInstance<WeaponSystemCodexScriptable>();
+                gun_m102.name = "gun_m102";
+                gun_m102.CaliberMm = 105;
+                gun_m102.FriendlyName = "105mm howitzer M102";
+                gun_m102.Type = WeaponSystemCodexScriptable.WeaponType.LargeCannon;
+
+                ammo_m1 = new AmmoType();
+                Util.ShallowCopy(ammo_m1, ammo_m456);
+                ammo_m1.Name = "M1/M557 HE-PD";
+                ammo_m1.AlwaysProduceBlast = true;
+                ammo_m1.ShatterOnRicochet = false;
+                ammo_m1.Category = AmmoType.AmmoCategory.Explosive;
+                ammo_m1.Caliber = 105;
+                ammo_m1.RhaPenetration = 40f;
+                ammo_m1.MuzzleVelocity = 600f; // actual mv is ~500 m/s but makes the howitzer a lot more finicky to use 
+                ammo_m1.Mass = 0.855f;
+                ammo_m1.SpallMultiplier = 1.35f;
+                ammo_m1.TntEquivalentKg = 15.66f; // overkill b/c fun
+                ammo_m1.DetonateSpallCount = 120;
+                ammo_m1.MaxSpallRha = 55f;
+                ammo_m1.MinSpallRha = 20f;
+                ammo_m1.UseTracer = false;
+                ammo_m1.Coeff = 0.0f;
+                //ammo_m1.ImpactFuseTime = 0.05f;
+                ammo_m1.ImpactEffectDescriptor = new GHPC.Effects.ParticleEffectsManager.ImpactEffectDescriptor()
+                {
+                    HasImpactEffect = true,
+                    ImpactCategory = GHPC.Effects.ParticleEffectsManager.Category.HighExplosive,
+                    EffectSize = GHPC.Effects.ParticleEffectsManager.EffectSize.MainGun,
+                    Flags = GHPC.Effects.ParticleEffectsManager.ImpactModifierFlags.Large,
+                    RicochetType = GHPC.Effects.ParticleEffectsManager.RicochetType.None,
+                    MinFilterStrictness = GHPC.Effects.ParticleEffectsManager.FilterStrictness.Low
+                };
+
+                ammo_codex_m1 = ScriptableObject.CreateInstance<AmmoCodexScriptable>();
+                ammo_codex_m1.AmmoType = ammo_m1;
+                ammo_codex_m1.name = "ammo_m1";
+
+                clip_m1 = new AmmoType.AmmoClip();
+                clip_m1.Capacity = 1;
+                clip_m1.Name = "M1/M557 HE-PD";
+                clip_m1.MinimalPattern = new AmmoCodexScriptable[1];
+                clip_m1.MinimalPattern[0] = ammo_codex_m1;
+
+                clip_codex_m1 = ScriptableObject.CreateInstance<AmmoClipCodexScriptable>();
+                clip_codex_m1.name = "clip_m1";
+                clip_codex_m1.CompatibleWeaponSystems = new WeaponSystemCodexScriptable[1];
+                clip_codex_m1.CompatibleWeaponSystems[0] = gun_m102;
+                clip_codex_m1.ClipType = clip_m1;
+
+                ammo_m81a1 = new AmmoType();
+                Util.ShallowCopy(ammo_m81a1, ammo_m791);
+                ammo_m81a1.Name = "M81A1 AP-T";
+                ammo_m81a1.Caliber = 40;
+                ammo_m81a1.RhaPenetration = 55f;
+                ammo_m81a1.MuzzleVelocity = 850f;
+                ammo_m81a1.Mass = 0.850f;
+                ammo_m81a1.Coeff = 0.08f;
+                ammo_m81a1.SectionalArea *= 3.5f;
+                ammo_m81a1.UseTracer = true;
+
+                ammo_codex_m81a1 = ScriptableObject.CreateInstance<AmmoCodexScriptable>();
+                ammo_codex_m81a1.AmmoType = ammo_m81a1;
+                ammo_codex_m81a1.name = "ammo_m81a1";
+
+                clip_m81a1 = new AmmoType.AmmoClip();
+                clip_m81a1.Capacity = 2500;
+                clip_m81a1.Name = "M81A1 AP-T";
+                clip_m81a1.MinimalPattern = new AmmoCodexScriptable[1];
+                clip_m81a1.MinimalPattern[0] = ammo_codex_m81a1;
+
+                clip_codex_m81a1 = ScriptableObject.CreateInstance<AmmoClipCodexScriptable>();
+                clip_codex_m81a1.name = "clip_m81a1";
+                clip_codex_m81a1.ClipType = clip_m81a1;
+            }
         }
     }
 }
